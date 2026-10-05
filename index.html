@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI Informatika Kelas VII - Berpikir Komputasional</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between relative selection:bg-indigo-500 selection:text-white">
+
+    <!-- TOAST / NOTIFICATION CONTAINER -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none max-w-sm w-full px-4">
+        <div id="toastContent" class="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700">
+            <i id="toastIcon" class="fa-solid fa-circle-info text-amber-400 text-xl"></i>
+            <span id="toastMessage" class="text-xs font-semibold leading-relaxed">Pesan notifikasi</span>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('home')">
+                    <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
+                        <i class="fa-solid fa-brain text-2xl text-amber-300"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-extrabold leading-tight tracking-tight">MPI Informatika VII</h1>
+                        <p class="text-[11px] text-indigo-200">Berpikir Komputasional (BK)</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex items-center space-x-1 text-xs font-bold">
+                    <button onclick="showSection('home')" id="nav-home" class="px-3.5 py-2 rounded-xl transition hover:bg-indigo-500/50 bg-indigo-800 shadow-inner">Beranda</button>
+                    <button onclick="showSection('modul1')" id="nav-modul1" class="px-3.5 py-2 rounded-xl transition hover:bg-indigo-500/50">1. Pengelolaan Data</button>
+                    <button onclick="showSection('modul2')" id="nav-modul2" class="px-3.5 py-2 rounded-xl transition hover:bg-indigo-500/50">2. Pemecahan Masalah</button>
+                    <button onclick="showSection('modul3')" id="nav-modul3" class="px-3.5 py-2 rounded-xl transition hover:bg-indigo-500/50">3. Pengujian Instruksi</button>
+                    <button onclick="showSection('evaluasi')" id="nav-evaluasi" class="px-3.5 py-2 rounded-xl bg-amber-400 text-slate-900 hover:bg-amber-300 shadow font-extrabold ml-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-award text-sm"></i> Kuis Evaluasi
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-indigo-700 hover:bg-indigo-500 focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Drawer -->
+        <div id="mobileNav" class="hidden md:hidden bg-indigo-800 px-4 pt-2 pb-4 space-y-2 border-t border-indigo-500 text-xs font-semibold">
+            <button onclick="showSection('home')" class="block w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-700">Beranda</button>
+            <button onclick="showSection('modul1')" class="block w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-700">1. Pengelolaan Data</button>
+            <button onclick="showSection('modul2')" class="block w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-700">2. Pemecahan Masalah Sederhana</button>
+            <button onclick="showSection('modul3')" class="block w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-700">3. Pengujian Instruksi</button>
+            <button onclick="showSection('evaluasi')" class="block w-full text-left px-3 py-2.5 rounded-lg bg-amber-400 text-slate-900 font-bold">Kuis Evaluasi</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- SECTION: BERANDA / HOME -->
+        <section id="sec-home" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-amber-400 text-slate-900 text-[10px] sm:text-xs uppercase px-3 py-1 rounded-full font-black tracking-wider mb-3 inline-block">Fase D - Kelas VII SMP</span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold mb-3 leading-tight">Media Pembelajaran Interaktif: Berpikir Komputasional</h2>
+                    <p class="text-indigo-100 text-xs sm:text-sm mb-6 leading-relaxed">
+                        Selamat datang! Di sini kamu akan belajar cara berpikir sistematis layaknya ilmuwan komputer untuk mengolah data kehidupan nyata, menyelesaikan masalah sehari-hari, dan menyusun serta menguji instruksi.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="showSection('modul1')" class="bg-white text-indigo-700 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow hover:bg-indigo-50 transition flex items-center gap-2">
+                            Mulai Belajar <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="showSection('evaluasi')" class="bg-amber-400 text-slate-900 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow hover:bg-amber-300 transition flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad"></i> Uji Kemampuan
+                        </button>
+                    </div>
+                </div>
+                <!-- Decorative Icon -->
+                <i class="fa-solid fa-laptop-code text-9xl text-white/10 absolute -right-6 -bottom-6 hidden sm:block pointer-events-none"></i>
+            </div>
+
+            <!-- CP & TP Info Card -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3 class="font-bold text-base mb-2 text-slate-800">Capaian Pembelajaran (CP)</h3>
+                    <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                        Pada akhir Fase D, murid mampu menerapkan pengelolaan data, pemecahan masalah sederhana dalam kehidupan masyarakat secara sistematis, dan menuliskan serta menguji instruksi.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <h3 class="font-bold text-base mb-2 text-slate-800">Materi Utama Kelas VII</h3>
+                    <ul class="text-slate-600 text-xs sm:text-sm space-y-2 list-disc list-inside">
+                        <li>Pengelolaan Data dalam Situasi Kehidupan</li>
+                        <li>Pemecahan Masalah Sederhana (4 Pilar BK)</li>
+                        <li>Pengembangan & Pengujian Instruksi (Debugging)</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h3 class="font-bold text-base mb-2 text-slate-800">4 Pilar Berpikir Komputasional</h3>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700 mt-2">
+                        <span class="bg-purple-50 text-purple-700 p-2 rounded-xl text-center border border-purple-100">1. Dekomposisi</span>
+                        <span class="bg-purple-50 text-purple-700 p-2 rounded-xl text-center border border-purple-100">2. Pengenalan Pola</span>
+                        <span class="bg-purple-50 text-purple-700 p-2 rounded-xl text-center border border-purple-100">3. Abstraksi</span>
+                        <span class="bg-purple-50 text-purple-700 p-2 rounded-xl text-center border border-purple-100">4. Algoritma</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Path Cards -->
+            <h3 class="text-lg font-bold text-slate-800 pt-2">Pilih Modul Pembelajaran</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Modul 1 Card -->
+                <div onclick="showSection('modul1')" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-300 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">Modul 1</span>
+                            <i class="fa-solid fa-database text-2xl text-blue-500 group-hover:scale-110 transition"></i>
+                        </div>
+                        <h4 class="font-bold text-base mb-2 group-hover:text-indigo-600 transition">Pengelolaan Data</h4>
+                        <p class="text-slate-500 text-xs sm:text-sm mb-4">Pelajari cara mengumpulkan, membersihkan data rusak (*data cleaning*), mengelompokkan, dan menampilkan diagram.</p>
+                    </div>
+                    <span class="text-xs font-bold text-indigo-600 flex items-center gap-1 mt-2">Mulai Modul <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                </div>
+
+                <!-- Modul 2 Card -->
+                <div onclick="showSection('modul2')" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-300 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full">Modul 2</span>
+                            <i class="fa-solid fa-puzzle-piece text-2xl text-emerald-500 group-hover:scale-110 transition"></i>
+                        </div>
+                        <h4 class="font-bold text-base mb-2 group-hover:text-indigo-600 transition">Pemecahan Masalah</h4>
+                        <p class="text-slate-500 text-xs sm:text-sm mb-4">Latih kemampuan analisis masalah kehidupan bermasyarakat menggunakan 4 Pilar Berpikir Komputasional.</p>
+                    </div>
+                    <span class="text-xs font-bold text-indigo-600 flex items-center gap-1 mt-2">Mulai Modul <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                </div>
+
+                <!-- Modul 3 Card -->
+                <div onclick="showSection('modul3')" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-300 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full">Modul 3</span>
+                            <i class="fa-solid fa-robot text-2xl text-amber-500 group-hover:scale-110 transition"></i>
+                        </div>
+                        <h4 class="font-bold text-base mb-2 group-hover:text-indigo-600 transition">Pengujian Instruksi</h4>
+                        <p class="text-slate-500 text-xs sm:text-sm mb-4">Program robot simulasi langkah demi langkah (algoritma sekuensial) dan lakukan uji perbaikan (*debugging*).</p>
+                    </div>
+                    <span class="text-xs font-bold text-indigo-600 flex items-center gap-1 mt-2">Mulai Modul <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MODUL 1 - PENGELOLAAN DATA -->
+        <section id="sec-modul1" class="hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-blue-600 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <span class="bg-blue-400 text-white text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Modul 1</span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Pengelolaan Data dalam Situasi Kehidupan</h2>
+                    <p class="text-blue-100 text-xs sm:text-sm mt-1">Memahami konsep data mentah, pembersihan data (*data cleaning*), pengelompokan, dan visualisasi.</p>
+                </div>
+                <i class="fa-solid fa-chart-pie text-5xl text-blue-300 opacity-80 hidden sm:block"></i>
+            </div>
+
+            <!-- Material Card -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 border-b pb-2 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-blue-600"></i> Konsep 4 Tahapan Pengelolaan Data
+                    </h3>
+                    <p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                        Di dunia nyata, data yang baru dikumpulkan dari lapangan seringkali berantakan, memiliki kesalahan penulisan, atau nilai yang tidak masuk akal. Agar data bermanfaat untuk pengambilan keputusan, kita harus memprosesnya dalam 4 tahapan:
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-file-import text-2xl text-blue-500 mb-2"></i>
+                            <h4 class="font-bold text-xs uppercase text-slate-700">1. Pengumpulan</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Mencatat data mentah hasil pencatatan</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-broom text-2xl text-amber-500 mb-2"></i>
+                            <h4 class="font-bold text-xs uppercase text-slate-700">2. Pembersihan</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Membuang/memperbaiki data salah & ganjil</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-layer-group text-2xl text-emerald-500 mb-2"></i>
+                            <h4 class="font-bold text-xs uppercase text-slate-700">3. Pengelompokan</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Merekapitulasi total berdasarkan kategori</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-chart-column text-2xl text-purple-500 mb-2"></i>
+                            <h4 class="font-bold text-xs uppercase text-slate-700">4. Visualisasi</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Menampilkan grafik batang/diagram</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Activity: Lab Pengelolaan Data Kantin -->
+                <div class="bg-slate-50 rounded-2xl p-5 sm:p-6 border border-slate-200 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-flask text-indigo-600"></i> SimuLab: Pengelolaan Data Penjualan Kantin
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Praktikkan langsung pembersihan data rusak sebelum diolah menjadi grafik statistik!</p>
+                        </div>
+                        <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-full self-start sm:self-auto">Praktik Interaktif</span>
+                    </div>
+
+                    <!-- Live Stats Indicators -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Total Data Mentah</span>
+                            <span id="statTotal" class="text-base sm:text-lg font-black text-slate-700">0</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-emerald-200 text-center shadow-sm">
+                            <span class="text-[10px] uppercase font-bold text-emerald-600 block">Data Valid</span>
+                            <span id="statValid" class="text-base sm:text-lg font-black text-emerald-600">0</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-rose-200 text-center shadow-sm">
+                            <span class="text-[10px] uppercase font-bold text-rose-600 block">Data Invalid / Rusak</span>
+                            <span id="statInvalid" class="text-base sm:text-lg font-black text-rose-600">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar & Filter -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+                        <!-- Filter Tabs -->
+                        <div class="flex bg-slate-200 p-1 rounded-xl text-xs font-bold text-slate-600 self-start">
+                            <button onclick="setTableFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-sm">Semua</button>
+                            <button onclick="setTableFilter('valid')" id="filter-valid" class="px-3 py-1.5 rounded-lg hover:text-slate-900">Valid</button>
+                            <button onclick="setTableFilter('invalid')" id="filter-invalid" class="px-3 py-1.5 rounded-lg hover:text-slate-900">Invalid</button>
+                        </div>
+
+                        <!-- Quick Action Buttons -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="autoCleanData()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-3 py-2 rounded-xl shadow transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Bersihkan Otomatis
+                            </button>
+                            <button onclick="resetDataSim()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table of raw data -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm custom-scrollbar">
+                        <table class="w-full text-xs text-left text-slate-600">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+                                <tr>
+                                    <th class="p-3">ID Transaksi</th>
+                                    <th class="p-3">Nama Items</th>
+                                    <th class="p-3">Jumlah Terjual</th>
+                                    <th class="p-3">Keterangan / Masalah</th>
+                                    <th class="p-3 text-center">Status</th>
+                                    <th class="p-3 text-center">Aksi (Pembersihan)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Process Data Button -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                        <p class="text-xs text-slate-500 italic">
+                            <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Pastikan semua data berstatus <b class="text-emerald-600">Valid</b> sebelum memproses visualisasi grafik!
+                        </p>
+                        <button onclick="processDataChart()" class="w-full sm:w-auto bg-indigo-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md hover:bg-indigo-500 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> Olah & Visualisasikan Grafik
+                        </button>
+                    </div>
+
+                    <!-- Chart & Summary Display Area -->
+                    <div id="chartContainer" class="hidden mt-6 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b pb-3">
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-column text-indigo-600"></i> Hasil Visualisasi Data Penjualan Valid
+                            </h4>
+                            <span class="text-[11px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Langkah 4: Visualisasi</span>
+                        </div>
+                        
+                        <div class="max-w-xl mx-auto h-64">
+                            <canvas id="kantinChart"></canvas>
+                        </div>
+
+                        <!-- Summary card -->
+                        <div id="chartSummary" class="text-xs text-slate-700 bg-emerald-50 text-emerald-900 p-4 rounded-xl border border-emerald-200 leading-relaxed font-medium">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MODUL 2 - PEMECAHAN MASALAH SEDERHANA -->
+        <section id="sec-modul2" class="hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-emerald-600 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <span class="bg-emerald-400 text-emerald-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Modul 2</span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Pemecahan Masalah Sederhana (4 Pilar BK)</h2>
+                    <p class="text-emerald-100 text-xs sm:text-sm mt-1">Menganalisis dan menyelesaikan masalah nyata di lingkungan sekolah secara sistematis.</p>
+                </div>
+                <i class="fa-solid fa-puzzle-piece text-5xl text-emerald-300 opacity-80 hidden sm:block"></i>
+            </div>
+
+            <!-- Material & Interactive Case Study -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <!-- Case Study Introduction -->
+                <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl text-xs sm:text-sm text-emerald-900 space-y-2">
+                    <div class="flex items-center gap-2 font-bold text-emerald-800 text-sm sm:text-base">
+                        <i class="fa-solid fa-dumpster-fire text-emerald-600 text-lg"></i> Studi Kasus: Penumpukan Sampah Plastik saat Istirahat Sekolah
+                    </div>
+                    <p class="leading-relaxed">
+                        Di SMP Negeri 1, setiap jam istirahat pertama berakhir, area tempat sampah selalu menumpuk dan berserakan dengan botol bekas, pembungkus makanan, dan sisa makanan. Mari kita selesaikan masalah ini secara terstruktur menggunakan <b>4 Pilar Berpikir Komputasional</b>!
+                    </p>
+                </div>
+
+                <!-- Interactive 4 Pillars Step-by-Step Exercise -->
+                <div class="space-y-4">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2 border-b pb-2">
+                        <i class="fa-solid fa-list-check text-emerald-600"></i> Latihan Penerapan 4 Pilar BK
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Pillar 1: Dekomposisi -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-purple-100 text-purple-700 text-[11px] font-bold px-2.5 py-0.5 rounded-md">Pilar 1: Dekomposisi</span>
+                                <i class="fa-solid fa-scissors text-purple-500"></i>
+                            </div>
+                            <h4 class="font-bold text-xs sm:text-sm text-slate-800">Memecah Masalah Besar</h4>
+                            <p class="text-slate-500 text-xs">Pilihlah subunit masalah kecil yang tepat dari masalah penumpukan sampah di atas!</p>
+                            
+                            <div id="p1-options" class="space-y-2 text-xs font-semibold">
+                                <button onclick="checkPillarAnswer('p1', 0)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-purple-50 transition">
+                                    A. Mewarnai ulang bak sampah sekolah
+                                </button>
+                                <button onclick="checkPillarAnswer('p1', 1)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-purple-50 transition">
+                                    B. Membagi menjadi: Jenis sampah, jumlah tempat sampah, dan kebiasaan siswa
+                                </button>
+                            </div>
+                            <div id="p1-feedback" class="hidden text-[11px] p-2 rounded-lg font-medium"></div>
+                        </div>
+
+                        <!-- Pillar 2: Pengenalan Pola -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-md">Pilar 2: Pengenalan Pola</span>
+                                <i class="fa-solid fa-magnifying-glass-chart text-blue-500"></i>
+                            </div>
+                            <h4 class="font-bold text-xs sm:text-sm text-slate-800">Mencari Kesamaan Pola</h4>
+                            <p class="text-slate-500 text-xs">Pola apa yang terlihat dari pengamatan sampah setiap harinya?</p>
+                            
+                            <div id="p2-options" class="space-y-2 text-xs font-semibold">
+                                <button onclick="checkPillarAnswer('p2', 0)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 transition">
+                                    A. Sampah botol plastik selalu melonjak paling banyak pada pukul 10.00 (jam istirahat)
+                                </button>
+                                <button onclick="checkPillarAnswer('p2', 1)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 transition">
+                                    B. Sampah menumpuk karena guru sedang mengajar di kelas
+                                </button>
+                            </div>
+                            <div id="p2-feedback" class="hidden text-[11px] p-2 rounded-lg font-medium"></div>
+                        </div>
+
+                        <!-- Pillar 3: Abstraksi -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-amber-100 text-amber-700 text-[11px] font-bold px-2.5 py-0.5 rounded-md">Pilar 3: Abstraksi</span>
+                                <i class="fa-solid fa-filter text-amber-500"></i>
+                            </div>
+                            <h4 class="font-bold text-xs sm:text-sm text-slate-800">Fokus Hal Penting</h4>
+                            <p class="text-slate-500 text-xs">Manakah informasi relevan yang harus diperhatikan untuk solusi?</p>
+                            
+                            <div id="p3-options" class="space-y-2 text-xs font-semibold">
+                                <button onclick="checkPillarAnswer('p3', 0)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-50 transition">
+                                    A. Merk jajanan dan warna baju siswa saat membeli minuman
+                                </button>
+                                <button onclick="checkPillarAnswer('p3', 1)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-amber-50 transition">
+                                    B. Lokasi titik kumpul sampah terbanyak dan ketersediaan tempat sampah pilah
+                                </button>
+                            </div>
+                            <div id="p3-feedback" class="hidden text-[11px] p-2 rounded-lg font-medium"></div>
+                        </div>
+
+                        <!-- Pillar 4: Algoritma -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-emerald-100 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-md">Pilar 4: Algoritma</span>
+                                <i class="fa-solid fa-diagram-project text-emerald-500"></i>
+                            </div>
+                            <h4 class="font-bold text-xs sm:text-sm text-slate-800">Langkah Solusi Sistematis</h4>
+                            <p class="text-slate-500 text-xs">Manakah urutan langkah solusi yang paling logis?</p>
+                            
+                            <div id="p4-options" class="space-y-2 text-xs font-semibold">
+                                <button onclick="checkPillarAnswer('p4', 0)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-emerald-50 transition">
+                                    A. Sediakan tempat sampah organik/anorganik -> Pasang poster pemicu kesadaran -> Buat jadwal piket bank sampah
+                                </button>
+                                <button onclick="checkPillarAnswer('p4', 1)" class="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-emerald-50 transition">
+                                    B. Langsung hukum semua siswa tanpa memberi tempat sampah
+                                </button>
+                            </div>
+                            <div id="p4-feedback" class="hidden text-[11px] p-2 rounded-lg font-medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MODUL 3 - PENGEMBANGAN & PENGUJIAN INSTRUKSI -->
+        <section id="sec-modul3" class="hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-amber-500 text-slate-900 p-6 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <span class="bg-slate-900 text-amber-300 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Modul 3</span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Pengembangan & Pengujian Instruksi</h2>
+                    <p class="text-slate-800 text-xs sm:text-sm mt-1">Menyusun instruksi sekuensial (algoritma) dan melakukan pengujian perbaikan (*debugging*).</p>
+                </div>
+                <i class="fa-solid fa-robot text-5xl text-slate-800 opacity-80 hidden sm:block"></i>
+            </div>
+
+            <!-- Interactive Robot Simulation -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold text-slate-800 border-b pb-2 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-amber-500"></i> Simulator Lab Robot Visual
+                    </h3>
+                    <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                        Bantu Robot <i class="fa-solid fa-robot text-indigo-600"></i> mencapai Bintang <i class="fa-solid fa-star text-amber-400"></i>! Susun instruksi langkah demi langkah. Jika robot menabrak rintangan <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>, lakukan <b>Debugging</b> (perbaikan instruksi).
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <!-- Left Column: Arena Grid -->
+                    <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Arena Matriks Grid 4 x 4</span>
+                        
+                        <div id="robotGrid" class="grid grid-cols-4 gap-2 bg-slate-300 p-2 rounded-2xl border-2 border-slate-400">
+                            <!-- Dynamically generated 16 cells -->
+                        </div>
+
+                        <div class="flex items-center gap-4 text-xs font-bold text-slate-600 pt-2">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-robot text-indigo-600"></i> Robot</span>
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-star text-amber-400"></i> Target</span>
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Rintangan</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Control Panel & Sequence -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-xs sm:text-sm text-slate-800 border-b pb-2">Panel Blok Instruksi</h4>
+                        
+                        <!-- Control Buttons -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="addInstruction('MAJU')" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-xl text-xs font-bold transition flex flex-col items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-arrow-up"></i> Maju 1 Langkah
+                            </button>
+                            <button onclick="addInstruction('BELOK_KIRI')" class="bg-slate-800 hover:bg-slate-900 text-white p-2.5 rounded-xl text-xs font-bold transition flex flex-col items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-rotate-left"></i> Belok Kiri
+                            </button>
+                            <button onclick="addInstruction('BELOK_KANAN')" class="bg-slate-800 hover:bg-slate-900 text-white p-2.5 rounded-xl text-xs font-bold transition flex flex-col items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-rotate-right"></i> Belok Kanan
+                            </button>
+                        </div>
+
+                        <!-- Sequence Queue -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                                <span>Urutan Instruksi Program:</span>
+                                <button onclick="clearInstructions()" class="text-rose-600 hover:underline text-[11px]">Hapus Semua</button>
+                            </div>
+                            <div id="instructionQueue" class="bg-white p-3 rounded-xl border border-slate-200 min-h-[70px] flex flex-wrap gap-2 items-center">
+                                <span class="text-xs text-slate-400 italic">Belum ada instruksi. Klik tombol di atas!</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Execution Buttons -->
+                        <div class="pt-2 flex gap-2">
+                            <button onclick="runRobotInstructions()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-play"></i> Jalankan & Uji Instruksi
+                            </button>
+                        </div>
+
+                        <!-- Debugging Output Feedback -->
+                        <div id="robotFeedback" class="hidden p-3 rounded-xl text-xs font-bold border leading-relaxed"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: EVALUASI / KUIS INTERAKTIF -->
+        <section id="sec-evaluasi" class="hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <span class="bg-amber-400 text-slate-900 text-xs px-3 py-1 rounded-full font-black uppercase tracking-wider">Evaluasi Akhir</span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Kuis Berpikir Komputasional Kelas VII</h2>
+                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Uji pemahamanmu mengenai pengelolaan data, pemecahan masalah, dan instruksi!</p>
+                </div>
+                <i class="fa-solid fa-award text-5xl text-amber-300 hidden sm:block"></i>
+            </div>
+
+            <!-- Quiz Card -->
+            <div id="quizBox" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                <!-- Progress Header -->
+                <div class="flex justify-between items-center border-b pb-4">
+                    <span id="questionCounter" class="text-xs sm:text-sm font-bold text-indigo-600">Soal 1 dari 5</span>
+                    <span id="quizScore" class="text-xs sm:text-sm font-extrabold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">Skor: 0</span>
+                </div>
+
+                <!-- Question Text -->
+                <div id="questionText" class="text-sm sm:text-base font-bold text-slate-800 leading-snug">
+                    <!-- Dynamic Question -->
+                </div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-2.5">
+                    <!-- Dynamic Options -->
+                </div>
+
+                <!-- Explanation / Feedback -->
+                <div id="quizFeedback" class="hidden p-4 rounded-xl text-xs font-medium border leading-relaxed"></div>
+
+                <!-- Controls -->
+                <div class="flex justify-end pt-2">
+                    <button id="nextBtn" onclick="nextQuestion()" class="hidden bg-indigo-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow hover:bg-indigo-500 transition">
+                        Soal Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Result Card (Hidden Initially) -->
+            <div id="resultBox" class="hidden bg-white rounded-2xl p-8 shadow-md border border-slate-200 text-center space-y-6">
+                <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-extrabold text-slate-800">Evaluasi Selesai!</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-1">Berikut adalah hasil pencapaian belajar kamu:</p>
+                </div>
+
+                <div class="bg-slate-50 p-6 rounded-2xl max-w-sm mx-auto border border-slate-200 space-y-2">
+                    <div class="text-xs uppercase text-slate-500 font-bold tracking-wider">Total Skor Akhir</div>
+                    <div id="finalScore" class="text-5xl font-black text-indigo-600">100</div>
+                    <div id="finalGrade" class="text-xs sm:text-sm font-bold text-emerald-600 pt-2">Sangat Baik! Mampu Menerapkan Berpikir Komputasional!</div>
+                </div>
+
+                <div class="flex justify-center gap-3">
+                    <button onclick="restartQuiz()" class="bg-indigo-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow hover:bg-indigo-500 transition flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Ulangi Kuis
+                    </button>
+                    <button onclick="showSection('home')" class="bg-slate-200 text-slate-700 text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-slate-300 transition">
+                        Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-800 text-slate-400 text-xs py-6 border-t border-slate-700 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-semibold text-slate-300">Media Pembelajaran Interaktif (MPI) Informatika - Fase D / Kelas VII SMP</p>
+            <p class="text-slate-400">Materi: Berpikir Komputasional (Pengelolaan Data, Pemecahan Masalah, dan Pengujian Instruksi)</p>
+            <p class="text-slate-500">&copy; 2026 Informatika SMP - Kurikulum Merdeka</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ================= TOAST NOTIFICATION SYSTEM (NO ALERT) =================
+        function showNotification(message, type = 'warning') {
+            const toast = document.getElementById('toastNotification');
+            const msgEl = document.getElementById('toastMessage');
+            const iconEl = document.getElementById('toastIcon');
+
+            if (!toast || !msgEl || !iconEl) return;
+
+            msgEl.innerText = message;
+            
+            if (type === 'error') {
+                iconEl.className = 'fa-solid fa-circle-exclamation text-rose-400 text-xl';
+            } else if (type === 'success') {
+                iconEl.className = 'fa-solid fa-circle-check text-emerald-400 text-xl';
+            } else {
+                iconEl.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-xl';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            
+            if (window.toastTimeout) clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3200);
+        }
+
+        // ================= NAVIGATION SYSTEM =================
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            
+            // Show target section
+            const targetSec = document.getElementById('sec-' + sectionId);
+            if (targetSec) targetSec.classList.remove('hidden');
+
+            // Reset desktop nav styles
+            ['home', 'modul1', 'modul2', 'modul3'].forEach(nav => {
+                const btn = document.getElementById('nav-' + nav);
+                if (btn) btn.classList.remove('bg-indigo-800', 'shadow-inner');
+            });
+            const activeNav = document.getElementById('nav-' + sectionId);
+            if (activeNav && sectionId !== 'evaluasi') {
+                activeNav.classList.add('bg-indigo-800', 'shadow-inner');
+            }
+
+            // Close mobile nav drawer
+            document.getElementById('mobileNav').classList.add('hidden');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize specific module logic
+            if (sectionId === 'modul1') initModul1();
+            if (sectionId === 'modul3') initRobotGame();
+            if (sectionId === 'evaluasi') startQuiz();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileNav');
+            menu.classList.toggle('hidden');
+        }
+
+        // ================= MODUL 1 LOGIC =================
+        const initialRawData = [
+            { id: 'T01', item: 'Nasi Goreng', qty: 25, valid: true, note: 'Normal' },
+            { id: 'T02', item: 'Es Teh Manis', qty: 40, valid: true, note: 'Normal' },
+            { id: 'T03', item: 'Roti Bakar', qty: -15, valid: false, note: 'Nilai jumlah negatif (-15)' },
+            { id: 'T04', item: 'Mie Ayam', qty: 30, valid: true, note: 'Normal' },
+            { id: 'T05', item: 'Batu Baterai', qty: 5, valid: false, note: 'Bukan makanan kantin' },
+            { id: 'T06', item: 'Es Teh Manis', qty: 35, valid: true, note: 'Normal' },
+            { id: 'T07', item: 'Nasi Goreng', qty: 15, valid: true, note: 'Normal' },
+            { id: 'T08', item: 'Roti Bakar', qty: 20, valid: true, note: 'Normal' }
+        ];
+
+        let currentData = [];
+        let currentFilter = 'all';
+        let myChart = null;
+
+        function initModul1() {
+            currentData = JSON.parse(JSON.stringify(initialRawData));
+            currentFilter = 'all';
+            updateFilterTabsUI();
+            renderTable();
+            document.getElementById('chartContainer').classList.add('hidden');
+        }
+
+        function setTableFilter(filter) {
+            currentFilter = filter;
+            updateFilterTabsUI();
+            renderTable();
+        }
+
+        function updateFilterTabsUI() {
+            ['all', 'valid', 'invalid'].forEach(f => {
+                const btn = document.getElementById('filter-' + f);
+                if (btn) {
+                    if (f === currentFilter) {
+                        btn.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-sm font-bold';
+                    } else {
+                        btn.className = 'px-3 py-1.5 rounded-lg hover:text-slate-900 font-semibold';
+                    }
+                }
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('dataTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+
+            // Calculate stats
+            const totalCount = currentData.length;
+            const validCount = currentData.filter(d => d.valid).length;
+            const invalidCount = currentData.filter(d => !d.valid).length;
+
+            document.getElementById('statTotal').innerText = totalCount;
+            document.getElementById('statValid').innerText = validCount;
+            document.getElementById('statInvalid').innerText = invalidCount;
+
+            // Filter data
+            const filtered = currentData.filter(row => {
+                if (currentFilter === 'valid') return row.valid;
+                if (currentFilter === 'invalid') return !row.valid;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Tidak ada data untuk ditampilkan pada filter ini.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((row) => {
+                const originalIndex = currentData.findIndex(d => d.id === row.id);
+                const tr = document.createElement('tr');
+                tr.className = row.valid ? 'border-b hover:bg-slate-50' : 'border-b bg-rose-50/70 hover:bg-rose-100/70';
+                
+                tr.innerHTML = `
+                    <td class="p-3 font-mono font-bold text-slate-700">${row.id}</td>
+                    <td class="p-3 font-semibold">${row.item}</td>
+                    <td class="p-3 font-bold ${row.qty < 0 ? 'text-rose-600' : 'text-slate-800'}">${row.qty} porsi</td>
+                    <td class="p-3 text-slate-500 text-[11px]">${row.note}</td>
+                    <td class="p-3 text-center">
+                        ${row.valid 
+                            ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold inline-block">Valid</span>' 
+                            : '<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold inline-block">Invalid</span>'}
+                    </td>
+                    <td class="p-3 text-center space-x-1">
+                        ${!row.valid && row.qty < 0 ? `
+                            <button onclick="fixNegativeData(${originalIndex})" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-1 rounded transition">
+                                <i class="fa-solid fa-wrench"></i> Perbaiki
+                            </button>
+                        ` : ''}
+                        <button onclick="removeDataRow(${originalIndex})" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-[10px] font-bold px-2 py-1 rounded transition">
+                            <i class="fa-solid fa-trash-can"></i> Hapus
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function removeDataRow(index) {
+            if (index >= 0 && index < currentData.length) {
+                const deleted = currentData.splice(index, 1);
+                renderTable();
+                showNotification(`Data ID ${deleted[0].id} dihapus dari dataset.`, 'info');
+            }
+        }
+
+        function fixNegativeData(index) {
+            if (index >= 0 && index < currentData.length) {
+                currentData[index].qty = Math.abs(currentData[index].qty);
+                currentData[index].valid = true;
+                currentData[index].note = 'Diperbaiki (dijadikan positif)';
+                renderTable();
+                showNotification(`Data ID ${currentData[index].id} berhasil diperbaiki!`, 'success');
+            }
+        }
+
+        function autoCleanData() {
+            let fixedCount = 0;
+            currentData.forEach(row => {
+                if (!row.valid) {
+                    if (row.qty < 0) {
+                        row.qty = Math.abs(row.qty);
+                        row.valid = true;
+                        row.note = 'Diperbaiki secara otomatis';
+                        fixedCount++;
+                    }
+                }
+            });
+
+            const prevLen = currentData.length;
+            currentData = currentData.filter(row => row.item !== 'Batu Baterai');
+            const removedLen = prevLen - currentData.length;
+
+            renderTable();
+            showNotification(`Pembersihan: ${fixedCount} data diperbaiki, ${removedLen} data non-makanan dibuang!`, 'success');
+        }
+
+        function resetDataSim() {
+            initModul1();
+            showNotification('Dataset kantin telah dikembalikan ke kondisi mentah awal.', 'info');
+        }
+
+        function processDataChart() {
+            const invalidRows = currentData.filter(d => !d.valid || d.qty <= 0);
+            const chartContainer = document.getElementById('chartContainer');
+            const summary = document.getElementById('chartSummary');
+
+            if (invalidRows.length > 0) {
+                showNotification('Masih ada data invalid! Silakan bersihkan data terlebih dahulu.', 'error');
+                return;
+            }
+
+            if (currentData.length === 0) {
+                showNotification('Data kosong! Klik Reset Data untuk memulai.', 'error');
+                return;
+            }
+
+            // Aggregate
+            const aggregated = {};
+            currentData.forEach(d => {
+                if (aggregated[d.item]) {
+                    aggregated[d.item] += d.qty;
+                } else {
+                    aggregated[d.item] = d.qty;
+                }
+            });
+
+            const labels = Object.keys(aggregated);
+            const values = Object.values(aggregated);
+
+            chartContainer.classList.remove('hidden');
+
+            const ctx = document.getElementById('kantinChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Terjual (Porsi)',
+                        data: values,
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            const total = values.reduce((a, b) => a + b, 0);
+            const maxVal = Math.max(...values);
+            const topItem = labels[values.indexOf(maxVal)];
+
+            summary.innerHTML = `
+                <div class="flex items-center gap-2 font-bold text-emerald-800 mb-1">
+                    <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+                    Data Berhasil Dibersihkan & Divisualisasikan!
+                </div>
+                <p>
+                    Dari <b>${currentData.length} transaksi valid</b>, diperoleh penjualan kantin sebanyak <b>${total} porsi</b>.<br>
+                    Makanan paling terlaris adalah <b>${topItem}</b> (${maxVal} porsi).
+                </p>
+            `;
+
+            showNotification('Visualisasi grafik berhasil dibuat!', 'success');
+            chartContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ================= MODUL 2 LOGIC =================
+        function checkPillarAnswer(pillarId, optIdx) {
+            const feedbackEl = document.getElementById(pillarId + '-feedback');
+            const optsDiv = document.getElementById(pillarId + '-options');
+            if (!feedbackEl || !optsDiv) return;
+
+            const correctAnswers = { p1: 1, p2: 0, p3: 1, p4: 0 };
+            const isCorrect = optIdx === correctAnswers[pillarId];
+
+            feedbackEl.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-800');
+                feedbackEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> <b>Tepat Sekali!</b> Penerapan pilar ini sudah sesuai dengan analisis studi kasus.';
+                showNotification('Analisis pilar benar!', 'success');
+            } else {
+                feedbackEl.classList.add('bg-rose-100', 'text-rose-800');
+                feedbackEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> <b>Belum Tepat.</b> Coba pertimbangkan opsi lainnya yang lebih relevan.';
+            }
+        }
+
+        // ================= MODUL 3 LOGIC (ROBOT SIMULATOR) =================
+        let instructions = [];
+        let robotState = { x: 0, y: 0, dir: 0 }; // dir: 0: East, 1: South, 2: West, 3: North
+        const targetState = { x: 3, y: 3 };
+        const obstacleState = { x: 1, y: 2 };
+
+        function initRobotGame() {
+            instructions = [];
+            robotState = { x: 0, y: 0, dir: 0 };
+            renderGrid();
+            renderInstructionQueue();
+            const feedback = document.getElementById('robotFeedback');
+            if (feedback) feedback.classList.add('hidden');
+        }
+
+        function renderGrid() {
+            const gridEl = document.getElementById('robotGrid');
+            if (!gridEl) return;
+            
+            gridEl.innerHTML = '';
+
+            for (let y = 0; y < 4; y++) {
+                for (let x = 0; x < 4; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl border border-slate-200 flex items-center justify-center text-xl relative shadow-inner';
+
+                    if (x === robotState.x && y === robotState.y) {
+                        let rotation = 'rotate-0';
+                        if (robotState.dir === 0) rotation = 'rotate-90'; // East
+                        if (robotState.dir === 1) rotation = 'rotate-180'; // South
+                        if (robotState.dir === 2) rotation = '-rotate-90'; // West
+                        if (robotState.dir === 3) rotation = 'rotate-0'; // North
+
+                        cell.innerHTML = `<i class="fa-solid fa-robot text-indigo-600 text-2xl transition-transform duration-300 ${rotation}"></i>`;
+                        cell.classList.add('bg-indigo-50', 'ring-2', 'ring-indigo-400');
+                    } else if (x === targetState.x && y === targetState.y) {
+                        cell.innerHTML = `<i class="fa-solid fa-star text-amber-400 text-2xl animate-bounce"></i>`;
+                        cell.classList.add('bg-amber-50');
+                    } else if (x === obstacleState.x && y === obstacleState.y) {
+                        cell.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-500 text-xl"></i>`;
+                        cell.classList.add('bg-rose-50');
+                    }
+
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+
+        function addInstruction(type) {
+            if (instructions.length >= 10) {
+                showNotification('Maksimal 10 instruksi!', 'warning');
+                return;
+            }
+            instructions.push(type);
+            renderInstructionQueue();
+        }
+
+        function clearInstructions() {
+            instructions = [];
+            renderInstructionQueue();
+            robotState = { x: 0, y: 0, dir: 0 };
+            renderGrid();
+            document.getElementById('robotFeedback').classList.add('hidden');
+        }
+
+        function renderInstructionQueue() {
+            const container = document.getElementById('instructionQueue');
+            if (!container) return;
+
+            if (instructions.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-400 italic">Belum ada instruksi. Klik tombol di atas!</span>';
+                return;
+            }
+
+            container.innerHTML = '';
+            instructions.forEach((ins, idx) => {
+                const badge = document.createElement('span');
+                badge.className = 'bg-indigo-100 text-indigo-800 text-[11px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm';
+                let label = ins;
+                if (ins === 'MAJU') label = 'Maju';
+                if (ins === 'BELOK_KIRI') label = 'Belok Kiri';
+                if (ins === 'BELOK_KANAN') label = 'Belok Kanan';
+
+                badge.innerHTML = `${idx + 1}. ${label}`;
+                container.appendChild(badge);
+            });
+        }
+
+        async function runRobotInstructions() {
+            robotState = { x: 0, y: 0, dir: 0 };
+            renderGrid();
+
+            const feedback = document.getElementById('robotFeedback');
+            feedback.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+
+            if (instructions.length === 0) {
+                feedback.classList.add('bg-rose-100', 'text-rose-800');
+                feedback.innerText = 'Tambahkan instruksi terlebih dahulu!';
+                return;
+            }
+
+            for (let i = 0; i < instructions.length; i++) {
+                const cmd = instructions[i];
+                await new Promise(r => setTimeout(r, 450));
+
+                if (cmd === 'BELOK_KIRI') {
+                    robotState.dir = (robotState.dir + 3) % 4;
+                } else if (cmd === 'BELOK_KANAN') {
+                    robotState.dir = (robotState.dir + 1) % 4;
+                } else if (cmd === 'MAJU') {
+                    let nx = robotState.x;
+                    let ny = robotState.y;
+
+                    if (robotState.dir === 0) nx += 1; // East
+                    if (robotState.dir === 1) ny += 1; // South
+                    if (robotState.dir === 2) nx -= 1; // West
+                    if (robotState.dir === 3) ny -= 1; // North
+
+                    // Bounds check
+                    if (nx < 0 || nx > 3 || ny < 0 || ny > 3) {
+                        feedback.classList.add('bg-rose-100', 'text-rose-800');
+                        feedback.innerHTML = '<i class="fa-solid fa-bug"></i> <b>BUG DETECTED!</b> Robot menabrak dinding arena. Perbaiki instruksimu!';
+                        return;
+                    }
+
+                    // Obstacle check
+                    if (nx === obstacleState.x && ny === obstacleState.y) {
+                        robotState.x = nx;
+                        robotState.y = ny;
+                        renderGrid();
+                        feedback.classList.add('bg-rose-100', 'text-rose-800');
+                        feedback.innerHTML = '<i class="fa-solid fa-bug"></i> <b>BUG DETECTED!</b> Robot menabrak rintangan. Lakukan <i>Debugging</i>!';
+                        return;
+                    }
+
+                    robotState.x = nx;
+                    robotState.y = ny;
+                }
+
+                renderGrid();
+            }
+
+            // Check final position
+            if (robotState.x === targetState.x && robotState.y === targetState.y) {
+                feedback.classList.add('bg-emerald-100', 'text-emerald-800');
+                feedback.innerHTML = '<i class="fa-solid fa-circle-check"></i> <b>SUKSES!</b> Algoritma instruksi tepat dan mengantar robot ke Bintang!';
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+            } else {
+                feedback.classList.add('bg-rose-100', 'text-rose-800');
+                feedback.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Robot belum sampai ke Bintang target. Coba evaluasi urutan langkahnya!';
+            }
+        }
+
+        // ================= EVALUASI / KUIS LOGIC =================
+        const quizQuestions = [
+            {
+                q: "Tahapan dalam pengelolaan data di mana kita membuang data yang salah, tidak relevan, atau bernilai aneh/rusak disebut ...",
+                options: ["Pengumpulan Data", "Pembersihan Data (Data Cleaning)", "Visualisasi Data", "Pengacak Data"],
+                answer: 1,
+                explain: "Pembersihan Data (Data Cleaning) adalah proses membuang atau memperbaiki data rusak/invalid sebelum diolah."
+            },
+            {
+                q: "Memecah masalah yang kompleks menjadi bagian-bagian kecil yang lebih mudah dikelola merupakan salah satu pilar BK, yaitu ...",
+                options: ["Dekomposisi", "Abstraksi", "Pengenalan Pola", "Algoritma"],
+                answer: 0,
+                explain: "Dekomposisi adalah teknik membagi masalah besar menjadi subunit masalah yang lebih kecil."
+            },
+            {
+                q: "Saat merencanakan jadwal belajar, kamu berfokus pada mata pelajaran utama dan mengabaikan warna sampul buku. Pilar yang kamu gunakan adalah ...",
+                options: ["Algoritma", "Pengenalan Pola", "Abstraksi", "Dekomposisi"],
+                answer: 2,
+                explain: "Abstraksi mengabaikan rincian tidak penting (warna buku) dan berfokus pada informasi penting (mata pelajaran)."
+            },
+            {
+                q: "Proses mencari dan memperbaiki kesalahan (bug) pada urutan instruksi program komputer dinamakan ...",
+                options: ["Coding", "Debugging", "Running", "Designing"],
+                answer: 1,
+                explain: "Debugging adalah proses mengidentifikasi dan memperbaiki kesalahan/bug pada instruksi."
+            },
+            {
+                q: "Urutan langkah-langkah logis dan terstruktur untuk menyelesaikan suatu pekerjaan atau program dinamakan ...",
+                options: ["Variabel", "Hardware", "Algoritma", "Diagram Venn"],
+                answer: 2,
+                explain: "Algoritma adalah sekumpulan instruksi terurut langkah demi langkah untuk menyelesaikan masalah."
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('quizBox').classList.remove('hidden');
+            document.getElementById('resultBox').classList.add('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = quizQuestions[currentQ];
+            document.getElementById('questionCounter').innerText = `Soal ${currentQ + 1} dari ${quizQuestions.length}`;
+            document.getElementById('quizScore').innerText = `Skor: ${score}`;
+            document.getElementById('questionText').innerText = q.q;
+
+            const optsDiv = document.getElementById('optionsContainer');
+            optsDiv.innerHTML = '';
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.classList.add('hidden');
+
+            document.getElementById('nextBtn').classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 transition flex items-center justify-between";
+                btn.innerHTML = `<span>${String.fromCharCode(65 + idx)}. ${opt}</span> <i class="fa-regular fa-circle text-slate-400"></i>`;
+                btn.onclick = () => checkQuizAnswer(idx, btn);
+                optsDiv.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selectedIdx, btnEl) {
+            const q = quizQuestions[currentQ];
+            const optsDiv = document.getElementById('optionsContainer');
+            const buttons = optsDiv.querySelectorAll('button');
+
+            buttons.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+
+            if (selectedIdx === q.answer) {
+                score += 20;
+                btnEl.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+                btnEl.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-600';
+                
+                feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+                feedback.innerHTML = `<b>Benar!</b> ${q.explain}`;
+            } else {
+                btnEl.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900');
+                btnEl.querySelector('i').className = 'fa-solid fa-circle-xmark text-rose-600';
+
+                buttons[q.answer].classList.add('bg-emerald-50', 'border-emerald-400');
+
+                feedback.classList.add('bg-rose-50', 'text-rose-800', 'border-rose-200');
+                feedback.innerHTML = `<b>Kurang Tepat.</b> Jawaban benar: <b>${q.options[q.answer]}</b>.<br>${q.explain}`;
+            }
+
+            document.getElementById('quizScore').innerText = `Skor: ${score}`;
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quizBox').classList.add('hidden');
+            document.getElementById('resultBox').classList.remove('hidden');
+
+            document.getElementById('finalScore').innerText = score;
+            const gradeText = document.getElementById('finalGrade');
+
+            if (score >= 80) {
+                gradeText.className = "text-xs sm:text-sm font-bold text-emerald-600 pt-2";
+                gradeText.innerText = "Sangat Baik! Kamu telah menguasai konsep Berpikir Komputasional!";
+                confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+            } else if (score >= 60) {
+                gradeText.className = "text-xs sm:text-sm font-bold text-amber-600 pt-2";
+                gradeText.innerText = "Cukup Baik! Pelajari kembali modul yang belum kamu kuasai.";
+            } else {
+                gradeText.className = "text-xs sm:text-sm font-bold text-rose-600 pt-2";
+                gradeText.innerText = "Perlu Latihan Lagi! Silakan baca ulang modul pembelajaran di atas.";
+            }
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+
+        // Initialize default view on window load
+        window.onload = () => {
+            showSection('home');
+        };
+    </script>
+</body>
+</html>
